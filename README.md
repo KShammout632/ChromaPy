@@ -1,2 +1,2 @@
 # ChromaPy
-Colour black and white images
+A python library for colouring black and white images.
