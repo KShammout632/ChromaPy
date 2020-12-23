@@ -135,7 +135,6 @@ class Model(nn.Module):
         time_elapsed = time.time() - since
         print('Training complete in {:.0f}m {:.0f}s'.format(
             time_elapsed // 60, time_elapsed % 60))
-        print('Best val Acc: {:4f}'.format(best_acc))
         
         # Load best model parameters 
         self.load_state_dict(best_model_wts)

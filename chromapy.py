@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--image", type=str, required=True,
+    parser.add_argument("-i", "--image", type=str, required=False,
         help="path to input black and white image")
     parser.add_argument('--use_gpu', action='store_true', default=False, 
         help='whether to use GPU')
@@ -52,8 +52,6 @@ def postprocess_tens(orig_img, ab, mode='bilinear'):
 	# ab 		1 x 2 x H x W
     HW_orig = orig_img.shape[2:]
     HW = ab.shape[2:]
-    
-    print(orig_img.shape)
 
 	# Resize if needed
     if(HW_orig[0]!=HW[0] or HW_orig[1]!=HW[1]):
@@ -93,16 +91,12 @@ dataloaders = {x : data.DataLoader(dsets[x], batch_size=6, shuffle=True)
 
 dataset_sizes = {x : len(dsets[x]) for x in ["train","val"]}
 
-# preprocessed_tensor = preprocess_image(args.image)
-model = Model()
 # model_unet = Model_unet(1,2)
-
 # model_unet_ft = model_unet.fit(dataloaders,1)
 # ab_out = model_unet_ft.forward(tensor_x_train[0:5])
-
+model = Model()
 model_ft = model.fit(dataloaders, 1)
 ab_out = model_ft.forward(tensor_x_train[0:5])
-# print(ab_out.shape)
 
 image_new = postprocess_tens(tensor_x_train[0:5], ab_out)
 
