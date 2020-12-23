@@ -10,6 +10,7 @@ from skimage import color
 from PIL import Image
 import matplotlib.pyplot as plt
 from cnn_model import Model
+from cnn_model2 import Model as Model_unet
 import pickle
 from keras.datasets import cifar10
 from sklearn.model_selection import train_test_split
@@ -51,6 +52,8 @@ def postprocess_tens(orig_img, ab, mode='bilinear'):
 	# ab 		1 x 2 x H x W
     HW_orig = orig_img.shape[2:]
     HW = ab.shape[2:]
+    
+    print(orig_img.shape)
 
 	# Resize if needed
     if(HW_orig[0]!=HW[0] or HW_orig[1]!=HW[1]):
@@ -60,7 +63,7 @@ def postprocess_tens(orig_img, ab, mode='bilinear'):
 
     out_lab_orig = torch.cat((orig_img, ab_orig), dim=1)
     out_lab_orig = out_lab_orig.data.cpu().numpy()
-    return color.lab2rgb(out_lab_orig[0,...].transpose((1,2,0)))
+    return color.lab2rgb(out_lab_orig.transpose((0,2,3,1)))
 
 args = parse_arguments()
 # image_dict = unpickle('C:\\Users\\karee\\Desktop\\ChromaPy\\data\\cifar-10-python\\cifar-10-batches-py\\data_batch_1')
@@ -70,7 +73,7 @@ args = parse_arguments()
 # Split data into training and validation
 x_train, x_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
-og_image = x_train[1]
+og_image = x_train[0:10]
 
 x_train, y_train = preprocess_training_set(x_train[:10])
 x_val, y_val = preprocess_training_set(x_val[:10])
@@ -92,17 +95,20 @@ dataset_sizes = {x : len(dsets[x]) for x in ["train","val"]}
 
 # preprocessed_tensor = preprocess_image(args.image)
 model = Model()
+# model_unet = Model_unet(1,2)
 
-model_ft = model.fit(dataloaders, 4)
-# ab_out = model.forward(preprocessed_tensor)
-ab_out = model_ft.forward(tensor_x_train[1][None,:,:,:])
+# model_unet_ft = model_unet.fit(dataloaders,1)
+# ab_out = model_unet_ft.forward(tensor_x_train[0:5])
+
+model_ft = model.fit(dataloaders, 1)
+ab_out = model_ft.forward(tensor_x_train[0:5])
 # print(ab_out.shape)
 
-image_new = postprocess_tens(tensor_x_train[1][None,:,:,:], ab_out)
+image_new = postprocess_tens(tensor_x_train[0:5], ab_out)
 
 f, axarr = plt.subplots(2,2)
-axarr[0,0].imshow(og_image)
-axarr[0,1].imshow(image_new)
-axarr[1,0].imshow(og_image)
-axarr[1,1].imshow(image_new)
+axarr[0,0].imshow(og_image[0])
+axarr[0,1].imshow(image_new[0])
+axarr[1,0].imshow(og_image[1])
+axarr[1,1].imshow(image_new[1])
 plt.show()

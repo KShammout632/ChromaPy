@@ -12,25 +12,48 @@ class Model(nn.Module):
         super(Model, self).__init__()
         
         self.encoder = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=5),
+            nn.Conv2d(1, 64, kernel_size=5, padding=1),
             nn.ReLU(True),
-            nn.Conv2d(64,128,kernel_size=5),
+            nn.Conv2d(64, 64, kernel_size=5, padding=1),
             nn.ReLU(True),
-            nn.Conv2d(128,256,kernel_size=5),
+            nn.BatchNorm2d(64),
+            nn.Conv2d(64,128,kernel_size=5, padding=1),
             nn.ReLU(True),
-            nn.Conv2d(256,512,kernel_size=5),
-            nn.ReLU(True)
+            nn.Conv2d(128, 128, kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.BatchNorm2d(128),
+            nn.Conv2d(128,256,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.Conv2d(256, 256, kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.BatchNorm2d(256),
+            nn.Conv2d(256,512,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.Conv2d(512,512,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.BatchNorm2d(512),
         )  
               
         self.decoder = nn.Sequential(             
-            nn.ConvTranspose2d(512,256,kernel_size=5),
+            nn.ConvTranspose2d(512,512,kernel_size=5, padding=1),
             nn.ReLU(True),
-            nn.ConvTranspose2d(256,128,kernel_size=5),
+            nn.BatchNorm2d(512),
+            nn.ConvTranspose2d(512,256,kernel_size=5, padding=1),
             nn.ReLU(True),
-            nn.ConvTranspose2d(128,64,kernel_size=5),
+            nn.ConvTranspose2d(256,256,kernel_size=5, padding=1),
             nn.ReLU(True),
-            nn.ConvTranspose2d(64,2,kernel_size=5),
-            nn.ReLU(True)
+            nn.BatchNorm2d(256),
+            nn.ConvTranspose2d(256,128,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(128,128,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.BatchNorm2d(128),
+            nn.ConvTranspose2d(128,64,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(64,64,kernel_size=5, padding=1),
+            nn.ReLU(True),
+            nn.BatchNorm2d(64),
+            nn.ConvTranspose2d(64,2,kernel_size=5, padding=1),
         )
         
     def fit(self, dataloaders, num_epochs):
@@ -103,10 +126,11 @@ class Model(nn.Module):
                 print(f'\nEpoch: {epoch} \tTraining Loss: {train_loss:.4f} \tValidation Loss: {valid_loss:.4f}')
                     
                 # Copy the model if it has a better validation loss
-                if valid_loss < valid_loss_min:
-                    valid_loss_min = valid_loss
-                    best_acc = valid_acc
-                    best_model_wts = copy.deepcopy(self.state_dict())
+                # if valid_loss < valid_loss_min:
+                #     valid_loss_min = valid_loss
+                #     best_acc = valid_acc
+                #     best_model_wts = copy.deepcopy(self.state_dict())
+                best_model_wts = copy.deepcopy(self.state_dict())
                     
         time_elapsed = time.time() - since
         print('Training complete in {:.0f}m {:.0f}s'.format(
@@ -115,7 +139,7 @@ class Model(nn.Module):
         
         # Load best model parameters 
         self.load_state_dict(best_model_wts)
-        torch.save(self.state_dict(), 'C:\\Users\\karee\\Desktop\\ChromaPy\\model.pth')
+        torch.save(self.state_dict(), 'C:\\Users\\karee\\Desktop\\ChromaPy\\model1.pth')
         # Return model
         return self
 
