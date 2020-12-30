@@ -10,7 +10,7 @@ from skimage import color
 from PIL import Image
 import matplotlib.pyplot as plt
 from cnn_model import Model
-from cnn_model2 import Model as Model_unet
+# from cnn_model2 import Model as Model_unet
 import pickle
 from keras.datasets import cifar10
 from sklearn.model_selection import train_test_split
